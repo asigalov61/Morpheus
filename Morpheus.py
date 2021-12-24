@@ -407,7 +407,7 @@ else:
 
 
 #@title Generate an accompaniment for the custom MIDI melody
-number_of_input_melody_notes = 256 #@param {type:"slider", min:16, max:256, step:16}
+number_of_input_melody_notes = 2560 #@param {type:"slider", min:16, max:256, step:16}
 number_of_instruments = 10
 number_of_prime_notes = 0
 
@@ -495,7 +495,7 @@ print('=' * 70)
 
 
 #@title Generate an accompaniment for the custom MIDI melody
-number_of_input_melody_notes = 256 #@param {type:"slider", min:16, max:256, step:16}
+number_of_input_melody_notes = 2560 #@param {type:"slider", min:16, max:256, step:16}
 number_of_instruments = 10
 minimum_beat_delta_time = 12
 number_of_prime_notes = 0
@@ -531,7 +531,7 @@ for i in tqdm(range(number_of_prime_notes, min(number_of_input_melody_notes, len
   outy = []
   tim = 0
 
-  for o in out[len(sng[-1006:]):]:
+  for o in out[len(sng[-1006:])+2:]:
     if o >=(256*11):
       outy.append(o)
 
