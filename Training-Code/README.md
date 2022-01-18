@@ -2,7 +2,7 @@
 
 ***
 
-### Trained on 1/4 of the [European MuseNet MIDI Subset](https://github.com/asigalov61/Tegridy-MIDI-Dataset/tree/master/World-MuseNet-MIDI-Dataset)
+### Trained with partial [LAKH MuseNet Dataset](https://github.com/asigalov61/LAKH-MuseNet-MIDI-Dataset)
 
 ### Please see Morpheus Maker colab notebook for the original training code
 
