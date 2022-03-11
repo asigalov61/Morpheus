@@ -1,5 +1,7 @@
 # Morpheus Contrastive Language-Music Pretraining
 
+***
+
 ## DEMO CLMP MODEL
 
 ### This is the model that can generate music based on the language (think CLIP for Music).
@@ -8,7 +10,7 @@
 
 ### Trained on LAKH/clean_midi MIDI subset (~ 9000 excerpts and composition names)
 
-<iframe src="https://onedrive.live.com/embed?cid=8A0D502FC99C608F&resid=8A0D502FC99C608F%2118523&authkey=AKWZMkzvZv3WBSo" width="98" height="120" frameborder="0" scrolling="no"></iframe>
+***
 
 ### Download here:
 
