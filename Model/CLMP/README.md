@@ -133,6 +133,15 @@ else:
 print('=' * 70)
 ```
 
+#### LANGUAGE OUTPUT SEQUENCE (sometimes the model wants to speak-up, so you can decode the language with the following code)
+
+```
+def ints2string(ints):
+    return ''.join([chr(y-(256 * 11)-(256 * 11)) for y in ints])
+
+ints2string(out)
+```
+
 ***
 
 ### Project Los Angeles
