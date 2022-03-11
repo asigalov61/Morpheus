@@ -24,7 +24,7 @@
 
 ```
 #@title Load/Reload the model
-full_path_to_model_checkpoint = "/notebooks/gpt2_rpr_checkpoint_2_epoch_0_steps_0.0605_loss.pth" #@param {type:"string"}
+full_path_to_model_checkpoint = "./Morpheus-CLMP-Trained-Model.pth" #@param {type:"string"}
 
 print('Loading the model...')
 config = GPTConfig(5890, 
@@ -111,7 +111,7 @@ if len(out) != 0:
 
     detailed_stats = TMIDIX.Tegridy_SONG_to_MIDI_Converter(song_f,
                                                           output_signature = 'Morpheus',  
-                                                          output_file_name = '/notebooks/Morpheus-Music-Composition', 
+                                                          output_file_name = './Morpheus-Music-Composition', 
                                                           track_name='Project Los Angeles', 
                                                           number_of_ticks_per_quarter=500)
 
