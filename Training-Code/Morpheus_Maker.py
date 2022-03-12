@@ -96,7 +96,7 @@ get_ipython().run_line_magic('cd', '/notebooks/')
 #@title Process MIDIs
 
 sorted_or_random_file_loading_order = False # Sorted order is NOT recommended
-dataset_ratio = 0.01 # Change this if you need more data
+dataset_ratio = 0.02 # Change this if you need more data
 
 
 print('TMIDIX MIDI Processor')
@@ -122,34 +122,28 @@ for (dirpath, dirnames, filenames) in os.walk(dataset_addr):
 print('=' * 70)
 
 if filez == []:
-  print('Could not find any MIDI files. Please check Dataset dir...')
-  print('=' * 70)
+    print('Could not find any MIDI files. Please check Dataset dir...')
+    print('=' * 70)
 
 if sorted_or_random_file_loading_order:
-  print('Sorting files...')
-  filez.sort()
-  print('Done!')
-  print('=' * 70)
+    print('Sorting files...')
+    filez.sort()
+    print('Done!')
+    print('=' * 70)
 else:
-  random.shuffle(filez)
+    print('Randomizing file list...')
+    random.shuffle(filez)
 
     
 stats = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-v = 1
 print('Processing MIDI files. Please wait...')
 for f in tqdm(filez[:int(len(filez) * dataset_ratio)]):
-  try:
-    fn = os.path.basename(f)
-    fn1 = fn.split('.')[0]
+    try:
+        fn = os.path.basename(f)
+        fn1 = fn.split('.')[0]
 
-    files_count += 1
-    
-    
-    
-    if not os.path.exists('./Output/'+fn):
-    
-    
+        files_count += 1
 
         #print('Loading MIDI file...')
         score = TMIDIX.midi2ms_score(open(f, 'rb').read())
@@ -187,18 +181,21 @@ for f in tqdm(filez[:int(len(filez) * dataset_ratio)]):
                 if event[0] == 'note':
                     event.extend([patches[event[3]]])
                     once = False
+                    
                     for p in patch_map:
                         if event[6] in p and event[3] != 9: # Except the drums
                             event[3] = patch_map.index(p)
                             once = True
+                            
                     if not once and event[3] != 9: # Except the drums
                         event[3] = 11 # All other instruments/patches channel
+                        
                     if event[3] < 11: # We won't write all other instruments for now...
                         events_matrix1.append(event)
                         stats[event[3]] += 1
 
         events_matrix1.sort()
-        
+
         #=======================
 
         if len(events_matrix1) > 0:
@@ -216,10 +213,6 @@ for f in tqdm(filez[:int(len(filez) * dataset_ratio)]):
                 ptc = e[4]
                 vel = e[5]
 
-
-                # durations.append(e[2])
-
-
                 melody_chords.append([time, dur, ptc, cha, vel])
 
                 pe = e
@@ -227,13 +220,13 @@ for f in tqdm(filez[:int(len(filez) * dataset_ratio)]):
 
         gfiles.append(f)
 
-  except KeyboardInterrupt:
-    print('Saving current progress and quitting...')
-    break  
-  
-  except:
-    print('Bad MIDI:', f)
-    continue
+    except KeyboardInterrupt:
+        print('Saving current progress and quitting...')
+        break  
+
+    except:
+        print('Bad MIDI:', f)
+        continue
 
 
 # In[ ]:
@@ -242,7 +235,6 @@ for f in tqdm(filez[:int(len(filez) * dataset_ratio)]):
 # Process and mark INTs...
 
 INTS_f1 = []
-
 
 for chords_list in tqdm(melody_chords_f):
     INTS_f1.append([-1, -1, -1, -1, -1]) # Intro
@@ -263,7 +255,7 @@ for chords_list in tqdm(melody_chords_f):
 # In[ ]:
 
 
-INTS_f1
+INTS_f1[:15]
 
 
 # In[ ]:
@@ -282,7 +274,7 @@ INTS_f1 = TMIDIX.Tegridy_Any_Pickle_File_Reader('/notebooks/Morpheus_INTS')
 
 
 #@title Load processed INTs datasets
-number_of_batches = 32 # Change this to your specs
+number_of_batches = 64 # Change this to your specs
 n_workers = 30 # Change this to your specs
 dataset_ratio = 1 # Change this if you want to limit input data
 val_dataset_ratio = 0.03 # Change this if you want to limit input data
@@ -312,13 +304,13 @@ for i in tqdm(INTS_f1):
         pe = i
   
     if i == [-1, -1, -1, -1, -1]: # Intro
-      train_data1.extend([(256 * 11)+(256 * 11)-3])
+        train_data1.extend([(256 * 11)+(256 * 11)-3])
 
     if i == [-2, -2, -2, -2, -2]: # Outro
-      train_data1.extend([(256 * 11)+(256 * 11)-2])
+        train_data1.extend([(256 * 11)+(256 * 11)-2])
 
     if i == [-3, -3, -3, -3, -3]: # End
-      train_data1.extend([(256 * 11)+(256 * 11)-1])
+        train_data1.extend([(256 * 11)+(256 * 11)-1])
 
 train_data = train_data1[:int(len(train_data1) * dataset_ratio)]
 
@@ -382,46 +374,47 @@ print('=' * 50)
 # In[ ]:
 
 
-train_data
+train_data[:15]
 
 
 # In[ ]:
 
 
 out = train_data[:16000]
+
 if len(out) != 0:
-  song = []
-  song = out
-  song_f = []
-  time = 0
-  dur = 0
-  vel = 0
-  pitch = 0
-  duration = 0
-  for s in song:
-    if s >= 0 and s < 256 * 11:
-        time += s % 256
-        dur = ((s // 256) + 1) * 250
-    
-    if s >= 256 * 11 and s < (256 * 21):
-        if (s // 128) % 2 != 0:
-            vel = 90
-            channel = ((s-128-(256*11)) // 256)
-        else:
-            vel = 60
-            channel = ((s-(256*11)) // 256)
-        
-        pitch = s % 256
-        
-        song_f.append(['note', (abs(time))*10, dur, channel, pitch, vel ])
-    
-  detailed_stats = TMIDIX.Tegridy_SONG_to_MIDI_Converter(song_f,
+    song = []
+    song = out
+    song_f = []
+    time = 0
+    dur = 0
+    vel = 0
+    pitch = 0
+    duration = 0
+    for s in song:
+        if s >= 0 and s < 256 * 11:
+            time += s % 256
+            dur = ((s // 256) + 1) * 250
+
+        if s >= 256 * 11 and s < (256 * 21):
+            if (s // 128) % 2 != 0:
+                vel = 90
+                channel = ((s-128-(256*11)) // 256)
+            else:
+                vel = 60
+                channel = ((s-(256*11)) // 256)
+
+            pitch = s % 256
+
+            song_f.append(['note', (abs(time))*10, dur, channel, pitch, vel ])
+
+    detailed_stats = TMIDIX.Tegridy_SONG_to_MIDI_Converter(song_f,
                                                         output_signature = 'Morpheus',  
                                                         output_file_name = '/notebooks/Morpheus-Music-Composition', 
                                                         track_name='Project Los Angeles', 
                                                         number_of_ticks_per_quarter=500)
 
-  print('Done!')
+    print('Done!')
 
 
 # # (TRAIN)
@@ -435,8 +428,8 @@ if len(out) != 0:
 config = GPTConfig(5640, 
                    max_seq,
                    dim_feedforward=1024,
-                   n_layer=16, 
-                   n_head=16, 
+                   n_layer=8, 
+                   n_head=8, 
                    n_embd=1024,
                    enable_rpr=True,
                    er_len=max_seq)
@@ -506,12 +499,6 @@ for epoch in range(0, epochs):
         print("")
         print("Best eval loss epoch:", best_eval_loss_epoch)
         print("Best eval loss:", best_eval_loss)
-
-
-# In[ ]:
-
-
-device
 
 
 # In[ ]:
