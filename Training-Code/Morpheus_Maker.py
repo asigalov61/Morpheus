@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# # Morpheus Maker (ver. 1.0)
+# # Morpheus Maker (ver. 2.0)
 # 
 # ***
 # 
@@ -19,7 +19,7 @@
 # 
 # #### Project Los Angeles
 # 
-# #### Tegridy Code 2021
+# #### Tegridy Code 2022
 # 
 # ***
 
@@ -76,16 +76,14 @@ os.chdir('/notebooks/')
 # In[ ]:
 
 
-#@title Download Multi-Instrumental European MuseNet MIDI dataset (Recommended)
-
-#@markdown Original Morpheus Model Dataset
+#@title Download original LAKH/clean_midi MIDI subset (Recommended)
 
 #@markdown Works best stand-alone/as-is for the optimal results
-get_ipython().run_line_magic('cd', '/notebooks/Dataset/')
+get_ipython().run_line_magic('cd', '/notebooks/')
 
-get_ipython().system("wget 'https://github.com/asigalov61/Tegridy-MIDI-Dataset/raw/master/World-MuseNet-MIDI-Dataset/European-MuseNet.zip'")
-get_ipython().system("unzip -j '/notebooks/Dataset/World-MuseNet-MIDI-Dataset/European-MuseNet.zip'")
-get_ipython().system("rm '/notebooks/Dataset/World-MuseNet-MIDI-Dataset/European-MuseNet.zip'")
+get_ipython().system("wget 'http://hog.ee.columbia.edu/craffel/lmd/clean_midi.tar.gz'")
+get_ipython().system("tar -xvf 'clean_midi.tar.gz'")
+get_ipython().system("rm 'clean_midi.tar.gz'")
 
 get_ipython().run_line_magic('cd', '/notebooks/')
 
@@ -93,68 +91,31 @@ get_ipython().run_line_magic('cd', '/notebooks/')
 # In[ ]:
 
 
-#@title Process MIDIs to special MIDI dataset with Tegridy MIDI Processor
+#@title Process MIDIs to special MIDI dataset with TMIDIX MIDI Processor
 
-#@markdown IMPORTANT NOTES:
+#@title Process MIDIs
 
-#@markdown 1) Best results are achieved with the single-track, single-channel, single-instrument MIDI 0 files with plain English names (avoid special or sys/foreign chars)
+sorted_or_random_file_loading_order = False # Sorted order is NOT recommended
+dataset_ratio = 0.01 # Change this if you need more data
 
-#@markdown 2) MIDI Channel = -1 means all MIDI channels except the drums. MIDI Channel = 16 means all channels will be processed. Otherwise, only single indicated MIDI channel will be processed
 
-desired_dataset_name = "Morpheus-Music-Dataset" #@param {type:"string"}
-file_name_to_output_dataset_to = "/notebooks/Morpheus-Music-Dataset" #@param {type:"string"}
-desired_MIDI_channel_to_process = 16 #@param {type:"slider", min:-1, max:16, step:1}
-sorted_or_random_file_loading_order = False #@param {type:"boolean"}
-encode_velocities = True #@param {type:"boolean"}
-encode_MIDI_channels = True #@param {type:"boolean"}
-add_transposed_dataset_by_this_many_pitches = 0 #@param {type:"slider", min:-12, max:12, step:1}
-add_transposed_and_flipped_dataset = False #@param {type:"boolean"}
-chordify_input_MIDIs = False #@param {type:"boolean"}
-melody_conditioned_chords = False #@param {type:"boolean"}
-melody_pitch_baseline = 60 #@param {type:"slider", min:0, max:127, step:1}
-time_denominator = 1 #@param {type:"slider", min:1, max:50, step:1}
-transform_to_pitch = 0 #@param {type:"slider", min:0, max:127, step:1}
-perfect_timings = True #@param {type:"boolean"}
-MuseNet_encoding = True #@param {type:"boolean"}
-chars_encoding_offset = 0 #@param {type:"number"}
-
-print('TMIDI Optimus MIDI Processor')
+print('TMIDIX MIDI Processor')
 print('Starting up...')
 ###########
 
-average_note_pitch = 0
-min_note = 127
-max_note = 0
-
 files_count = 0
 
-gfiles = 0
+gfiles = []
 
-chords_list_f = []
-melody_list_f = []
-
-chords_list = []
-chords_count = 0
-
-melody_chords = []
-melody_count = 0
-
-TXT_String = ''
-
-TXT = ''
-melody = []
-chords = []
-INTS_f = []
-
-flist = []
+melody_chords_f = []
 
 ###########
 
 print('Loading MIDI files...')
 print('This may take a while on a large dataset in particular.')
 
-dataset_addr = "/notebooks/Dataset/"
-os.chdir(dataset_addr)
+dataset_addr = "./clean_midi/"
+# os.chdir(dataset_addr)
 filez = list()
 for (dirpath, dirnames, filenames) in os.walk(dataset_addr):
     filez += [os.path.join(dirpath, file) for file in filenames]
@@ -169,63 +130,102 @@ if sorted_or_random_file_loading_order:
   filez.sort()
   print('Done!')
   print('=' * 70)
-
 else:
   random.shuffle(filez)
 
-# Stamping the dataset info
-print('Stamping the dataset info...')
+    
+stats = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-TXT_String += 'DATASET=' + str(desired_dataset_name) + chr(10)
-TXT_String += 'CREATED_ON=' + str(datetime.now()).replace(' ', '-').replace(':', '-').replace('.', '-') + chr(10)
-
-TXT_String += 'CHARS_ENCODING_OFFSET=' + str(chars_encoding_offset) + chr(10)
-TXT_String += 'TIME_DENOMINATOR=' + str(time_denominator) + chr(10)
-TXT_String += 'TRANSFORM=' + str(transform_to_pitch) + chr(10)
-TXT_String += 'PERFECT_TIMINGS=' + str(perfect_timings) + chr(10)
-TXT_String += 'MUSENET_ENCODING=' + str(MuseNet_encoding) + chr(10)
-TXT_String += 'TRANSPOSED_BY=' + str(add_transposed_dataset_by_this_many_pitches) + chr(10)
-TXT_String += 'TRANSPOSED_AND_FLIPPED=' + str(add_transposed_and_flipped_dataset) + chr(10)
-
-TXT_String += 'LEGEND=STA-DUR-PTC'
-if encode_velocities:
-  TXT_String += '-VEL'
-if encode_MIDI_channels:
-  TXT_String += '-CHA'
-TXT_String += chr(10)
-
+v = 1
 print('Processing MIDI files. Please wait...')
-for f in tqdm(filez):
+for f in tqdm(filez[:int(len(filez) * dataset_ratio)]):
   try:
     fn = os.path.basename(f)
     fn1 = fn.split('.')[0]
 
     files_count += 1
-    TXT, melody, chords, bass_melody, karaokez, INTS, aux1, aux2 = TMIDIX.Optimus_MIDI_TXT_Processor(f, chordify_TXT=chordify_input_MIDIs, output_MIDI_channels=encode_MIDI_channels, char_offset=chars_encoding_offset, dataset_MIDI_events_time_denominator=time_denominator, output_velocity=encode_velocities, MIDI_channel=desired_MIDI_channel_to_process, MIDI_patch=range(0, 127), melody_conditioned_encoding=melody_conditioned_chords, melody_pitch_baseline=melody_pitch_baseline, perfect_timings=perfect_timings, musenet_encoding=MuseNet_encoding, transform=transform_to_pitch)
-    TXT_String += TXT
-    melody_list_f += melody
-    chords_list_f.append(chords)
-    INTS_f.append(INTS)
-    flist.append([f, fn1])
-    gfiles += 1
+    
+    
+    
+    if not os.path.exists('./Output/'+fn):
+    
+    
 
-    if add_transposed_dataset_by_this_many_pitches != 0:
+        #print('Loading MIDI file...')
+        score = TMIDIX.midi2ms_score(open(f, 'rb').read())
 
-      TXT, melody, chords, bass_melody, karaokez, INTS, aux1, aux2 = TMIDIX.Optimus_MIDI_TXT_Processor(f, chordify_TXT=chordify_input_MIDIs, output_MIDI_channels=encode_MIDI_channels, char_offset=chars_encoding_offset, dataset_MIDI_events_time_denominator=time_denominator, output_velocity=encode_velocities, MIDI_channel=desired_MIDI_channel_to_process, transpose_by=add_transposed_dataset_by_this_many_pitches, MIDI_patch=range(0, 127), melody_conditioned_encoding=melody_conditioned_chords, melody_pitch_baseline=melody_pitch_baseline, perfect_timings=perfect_timings, musenet_encoding=MuseNet_encoding, transform=transform_to_pitch)
-      TXT_String += TXT
-      melody_list_f += melody
-      chords_list_f.append(chords)
-      INTS_f.append(INTS)
-      gfiles += 1
+        events_matrix = []
 
-    if add_transposed_and_flipped_dataset == True:
+        itrack = 1
 
-      TXT, melody, chords, bass_melody, karaokez, INTS, aux1, aux2 = TMIDIX.Optimus_MIDI_TXT_Processor(f, chordify_TXT=chordify_input_MIDIs, output_MIDI_channels=encode_MIDI_channels, char_offset=chars_encoding_offset, dataset_MIDI_events_time_denominator=time_denominator, output_velocity=encode_velocities, MIDI_channel=desired_MIDI_channel_to_process, transpose_by=-12, MIDI_patch=range(0, 127), flip=True, melody_conditioned_encoding=melody_conditioned_chords, melody_pitch_baseline=melody_pitch_baseline, perfect_timings=perfect_timings, musenet_encoding=MuseNet_encoding, transform=transform_to_pitch)
-      TXT_String += TXT
-      melody_list_f += melody
-      chords_list_f += chords
-      INTS_f.append(INTS)
-      gfiles += 1
+        patches = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+
+        patch_map = [[0, 1, 2, 3, 4, 5, 6, 7], # Piano 
+                     [24, 25, 26, 27, 28, 29, 30], # Guitar
+                     [32, 33, 34, 35, 36, 37, 38, 39], # Bass
+                     [40, 41], # Violin
+                     [42, 43], # Cello
+                     [46], # Harp
+                     [56, 57, 58, 59, 60], # Trumpet
+                     [71, 72], # Clarinet
+                     [73, 74, 75], # Flute
+                     [-1], # Fake Drums
+                     [52, 53] # Choir
+                    ]
+
+        while itrack < len(score):
+            for event in score[itrack]:         
+                if event[0] == 'note' or event[0] == 'patch_change':
+                    events_matrix.append(event)
+            itrack += 1
+
+        events_matrix1 = []
+        for event in events_matrix:
+                if event[0] == 'patch_change':
+                    patches[event[2]] = event[3]
+
+                if event[0] == 'note':
+                    event.extend([patches[event[3]]])
+                    once = False
+                    for p in patch_map:
+                        if event[6] in p and event[3] != 9: # Except the drums
+                            event[3] = patch_map.index(p)
+                            once = True
+                    if not once and event[3] != 9: # Except the drums
+                        event[3] = 11 # All other instruments/patches channel
+                    if event[3] < 11: # We won't write all other instruments for now...
+                        events_matrix1.append(event)
+                        stats[event[3]] += 1
+
+        events_matrix1.sort()
+        
+        #=======================
+
+        if len(events_matrix1) > 0:
+            events_matrix1.sort(key=lambda x: x[4], reverse=True)
+            events_matrix1.sort(key=lambda x: (x[1], x[3]))
+
+            cho = []
+            pe = events_matrix1[0]
+            melody_chords = []
+            for e in events_matrix1:
+
+                time = min(255, int(abs(e[1]-pe[1]) / 10))
+                dur = min(255, int(abs(e[2] / 10)))
+                cha = e[3]
+                ptc = e[4]
+                vel = e[5]
+
+
+                # durations.append(e[2])
+
+
+                melody_chords.append([time, dur, ptc, cha, vel])
+
+                pe = e
+            melody_chords_f.append(melody_chords)
+
+        gfiles.append(f)
 
   except KeyboardInterrupt:
     print('Saving current progress and quitting...')
@@ -235,60 +235,22 @@ for f in tqdm(filez):
     print('Bad MIDI:', f)
     continue
 
-TXT_String += 'TOTAL_SONGS_IN_DATASET=' + str(gfiles)
-
-try:
-  print('Task complete :)')
-  print('==================================================')
-  if add_transposed_dataset_by_this_many_pitches != 0:
-    print('NOTE: Transposed dataset was added per users request.')
-    print('==================================================')
-  if add_transposed_and_flipped_dataset == True:
-    print('NOTE: Flipped dataset was added per users request.')  
-    print('==================================================')
-  print('Number of processed dataset MIDI files:', files_count)
-  print('Number of MIDI chords recorded:', len(chords_list_f))
-  print('First chord event:', chords_list_f[0], 'Last chord event:', chords_list_f[-1]) 
-  print('Number of recorded melody events:', len(melody_list_f))
-  print('First melody event:', melody_list_f[0], 'Last Melody event:', melody_list_f[-1])
-  print('Total number of MIDI events recorded:', len(chords_list_f) + len(melody_list_f))
-  print('==================================================')
-
-  # Writing dataset to TXT file
-  with open(file_name_to_output_dataset_to + '.txt', 'wb') as f:
-    f.write(TXT_String.encode('utf-8', 'replace'))
-    f.close
-
-  # Dataset
-  MusicDataset = [chords_list_f, melody_list_f, INTS_f]
-
-  # Writing dataset to pickle file
-  TMIDIX.Tegridy_Any_Pickle_File_Writer(MusicDataset, file_name_to_output_dataset_to)
-
-except:
-  print('=' * 70)
-  print('IO Error!')
-  print('Please check that Dataset dir is not empty/check other IO code.')
-  print('=' * 70)
-  print('Shutting down...')
-  print('=' * 70)
-
 
 # In[ ]:
 
 
-# Process INTs...
+# Process and mark INTs...
 
 INTS_f1 = []
 
 
-for chords_list in tqdm(chords_list_f):
+for chords_list in tqdm(melody_chords_f):
     INTS_f1.append([-1, -1, -1, -1, -1]) # Intro
     pe = chords_list[0]
     count = 0
     for i in chords_list:
 
-        INTS_f1.append([int(abs(i[1]-pe[1])/ 10), int(i[2] / 10), i[4], i[3], i[5] ])
+        INTS_f1.append(i)
         
         if count == len(chords_list)-50:
             INTS_f1.append([-2, -2, -2, -2, -2]) # Outro
@@ -301,22 +263,29 @@ for chords_list in tqdm(chords_list_f):
 # In[ ]:
 
 
-TMIDIX.Tegridy_Any_Pickle_File_Writer(INTS_f1, '/notebooks/Morpheus_INTS_f1-MI-E')
+INTS_f1
 
 
 # In[ ]:
 
 
-INTS_f1 = TMIDIX.Tegridy_Any_Pickle_File_Reader('/notebooks/Morpheus_INTS_f1-MI-E')
+TMIDIX.Tegridy_Any_Pickle_File_Writer(INTS_f1, '/notebooks/Morpheus_INTS')
+
+
+# In[ ]:
+
+
+INTS_f1 = TMIDIX.Tegridy_Any_Pickle_File_Reader('/notebooks/Morpheus_INTS')
 
 
 # In[ ]:
 
 
 #@title Load processed INTs datasets
-number_of_batches = 32 #@param {type:"slider", min:2, max:32, step:2}
-n_workers = 8
-dataset_ratio = 0.5
+number_of_batches = 32 # Change this to your specs
+n_workers = 30 # Change this to your specs
+dataset_ratio = 1 # Change this if you want to limit input data
+val_dataset_ratio = 0.03 # Change this if you want to limit input data
 
 print('=' * 50)
 print('Prepping INTs datasets...')
@@ -329,31 +298,32 @@ avg_vel = int(sum([y[4] for y in INTS_f1]) / len(INTS_f1))
 pe = INTS_f1[0]
 
 for i in tqdm(INTS_f1):
-  if max(i) < 256 and min(i) >= 0 and i[3] < 10:
 
-    if i[0] != 0:
-        train_data1.extend([i[0] + (int(i[1] / 25) * 256)])
-
-    if i[4] > avg_vel: 
-        train_data1.extend([(256 * 11) + 128 + (256 * i[3])+i[2]])
-    else:
-        train_data1.extend([(256 * 11) + (256 * i[3])+i[2]])
+    if min(i) >= 0:
         
-    pe = i
+        if i[0] != 0:
+            train_data1.extend([i[0] + (int(i[1] / 25) * 256)])
+
+        if i[4] > avg_vel: 
+            train_data1.extend([(256 * 11) + 128 + (256 * i[3])+i[2]])
+        else:
+            train_data1.extend([(256 * 11) + (256 * i[3])+i[2]])
+
+        pe = i
   
-  if max(i) == -1 and min(i) == -1: # Intro
+    if i == [-1, -1, -1, -1, -1]: # Intro
       train_data1.extend([(256 * 11)+(256 * 11)-3])
-  
-  if max(i) == -2 and min(i) == -2: # Outro
+
+    if i == [-2, -2, -2, -2, -2]: # Outro
       train_data1.extend([(256 * 11)+(256 * 11)-2])
-  
-  if max(i) == -3 and min(i) == -3: # End
+
+    if i == [-3, -3, -3, -3, -3]: # End
       train_data1.extend([(256 * 11)+(256 * 11)-1])
 
 train_data = train_data1[:int(len(train_data1) * dataset_ratio)]
 
-val_dataset = train_data[:int(len(train_data) * 0.03)]
-test_dataset = train_data[:int(len(train_data) * 0.03)]
+val_dataset = train_data[:int(len(train_data) * val_dataset_ratio)]
+test_dataset = train_data[:int(len(train_data) * val_dataset_ratio)]
 
 train_list = train_data
 val_list = val_dataset
@@ -383,21 +353,21 @@ print('Checking datasets shapes...')
 print('=' * 50)
 
 print('Train loader')
-for x, tgt in tqdm(train_loader):
+for x, tgt in train_loader:
     print(f'X shape: {x.shape}')
     print(f'Target shape: {tgt.shape}')
     break
 print('=' * 50)
 
 print('Validation loader')
-for x, tgt in tqdm(val_loader):
+for x, tgt in val_loader:
     print(f'X shape: {x.shape}')
     print(f'Target shape: {tgt.shape}')
     break
 print('=' * 50)
 
 print('Test loader')
-for x, tgt in tqdm(test_loader):
+for x, tgt in test_loader:
     print(f'X shape: {x.shape}')
     print(f'Target shape: {tgt.shape}')
     break
@@ -429,7 +399,7 @@ if len(out) != 0:
   pitch = 0
   duration = 0
   for s in song:
-    if s >= 0 and s <= 256 * 11:
+    if s >= 0 and s < 256 * 11:
         time += s % 256
         dur = ((s // 256) + 1) * 250
     
@@ -465,12 +435,19 @@ if len(out) != 0:
 config = GPTConfig(5640, 
                    max_seq,
                    dim_feedforward=1024,
-                   n_layer=6, 
-                   n_head=8, 
+                   n_layer=16, 
+                   n_head=16, 
                    n_embd=1024,
                    enable_rpr=True,
                    er_len=max_seq)
-model = GPT(config).to(get_device())
+
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+model = GPT(config)
+
+model = nn.DataParallel(model)
+
+model.to(device)
 
 #=====
 
@@ -497,7 +474,14 @@ loss_train, loss_val, acc_val = [], [], []
 for epoch in range(0, epochs):
     new_best = False
     
-    loss = train(epoch+1, model, train_loader, train_loss_func, opt, lr_scheduler, num_iters=-1, save_checkpoint_steps=4000)
+    loss = train(epoch+1, 
+                 model, train_loader, 
+                 train_loss_func, 
+                 opt, 
+                 lr_scheduler, 
+                 num_iters=-1, 
+                 save_checkpoint_steps=4000)
+    
     loss_train.append(loss)
     
     eval_loss, eval_acc = eval_model(model, val_loader, eval_loss_func, num_iters=-1)
@@ -527,6 +511,12 @@ for epoch in range(0, epochs):
 # In[ ]:
 
 
+device
+
+
+# In[ ]:
+
+
 # Eval funct to eval separately if needed
 
 #=====
@@ -534,7 +524,7 @@ for epoch in range(0, epochs):
 init_step = 0
 lr = LR_DEFAULT_START
 lr_stepper = LrStepTracker(d_model, SCHEDULER_WARMUP_STEPS, init_step)
-eval_loss_func = nn.CrossEntropyLoss(ignore_index=TOKEN_PAD)
+eval_loss_func = nn.CrossEntropyLoss(ignore_index=5640)
 train_loss_func = eval_loss_func
 
 opt = Adam(model.parameters(), lr=lr, betas=(ADAM_BETA_1, ADAM_BETA_2), eps=ADAM_EPSILON)
@@ -562,7 +552,7 @@ plt.savefig('/notebooks/Morpheus-Training-Loss-Graph.png')
 #@title Save the model
 
 print('Saving the model...')
-full_path_to_model_checkpoint = "/notebooks/Morpheus-Trained-Model-1024-MI.pth" #@param {type:"string"}
+full_path_to_model_checkpoint = "/notebooks/Morpheus-Trained-Model.pth" #@param {type:"string"}
 torch.save(model.state_dict(), full_path_to_model_checkpoint)
 print('Done!')
 
