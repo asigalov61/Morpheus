@@ -8,7 +8,8 @@
 
 ### This is a DEMO model, so it does not always produces coherent melody but it does play quite well
 
-### Trained on LAKH/clean_midi MIDI subset (~ 9000 excerpts and composition names)
+### Trained on LAKH/clean_midi MIDI subset (~ 9000 excerpts and composition names). 
+### [Download the datasets here.](https://github.com/asigalov61/Tegridy-MIDI-Dataset/tree/master/CLMP)
 
 ***
 
@@ -19,6 +20,12 @@
 ```
 
 ### How to use:
+
+#### IMPORTS: 
+
+'''
+Same as in Morpheus implementation.
+'''
 
 #### LOAD:
 
