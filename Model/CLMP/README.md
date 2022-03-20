@@ -13,25 +13,8 @@
 
 ***
 
-### Download here:
-
-```
-!wget --no-check-certificate -O 'Morpheus-CLMP-Trained-Model.pth' "https://onedrive.live.com/download?cid=8A0D502FC99C608F&resid=8A0D502FC99C608F%2118523&authkey=AKWZMkzvZv3WBSo"
-```
-
-### How to use:
-
-#### Please see colab in this section of the repo
-
-### NOTE:
-#### LANGUAGE OUTPUT SEQUENCE (sometimes the model wants to speak-up, so you can decode the language with the following code)
-
-```
-def ints2string(ints):
-    return ''.join([chr(y-(256 * 11)-(256 * 11)) for y in ints])
-
-ints2string(out)
-```
+## How to use:
+### Please see colab in this section of the repo
 
 ***
 
