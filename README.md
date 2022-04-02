@@ -16,7 +16,10 @@
 ### 2) Multiple-embedding technology (proper MIDI encoding with binary velocity)
 ### 3) 5-in-1 capabilities: performance, continuation, melody, accompaniment, inpainting(!)
 ### 4) Multi-channel MIDI capabilities (9 simulataneous MIDI instruments + drums)
-### 5) BONUS: CLaMP capabilities (CLIP for Music)
+### 5) Distributed training capabilities (easily train on multiple GPUs out of the box)
+### 6) Pure PyTorch implementation (you only need PyTorch for training and inference)
+### 7) Super-optimized and streamlined code (easy to understand and to modify)
+### 8) BONUS: CLaMP capabilities (CLIP for Music)
 
 ***
 
