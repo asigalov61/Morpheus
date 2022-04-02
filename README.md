@@ -15,7 +15,8 @@
 ### 1) Most advanced Music AI technology to-date (GPT3+RPR[RGA]) with FULL(!) attention.
 ### 2) Multiple-embedding technology (proper MIDI encoding with binary velocity)
 ### 3) 5-in-1 capabilities: performance, continuation, melody, accompaniment, inpainting(!)
-### 4) BONUS: CLaMP capabilities (CLIP for Music)
+### 4) Multi-channel MIDI capabilities (9 simulataneous MIDI instruments + drums)
+### 5) BONUS: CLaMP capabilities (CLIP for Music)
 
 ***
 
