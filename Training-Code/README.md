@@ -10,7 +10,7 @@
 
 ***
 
-### Version 2.0 NOTE:
+### Version 2.0 NOTES:
 
 #### Morpheus Maker 2.0 uses Torch's nn.DataParallel wrapper which requires special loading procedure to work. You will need to use the following code to load trained models:
 
@@ -51,8 +51,10 @@ model.eval()
 print('Done!')
 ```
 
+#### 32x128 timings version seem to produce better results over original 256x10 version due to the fact that duration timings seem to be more important for music/model than start-times. Also, 32x128 > 256x10 but not significantly so there is an acceptable trade-off IMHO in terms of timings distribution vs. dictionary size. 
+
 ***
 
 ### Project Los Angeles
 
-### Tegridy Code 2021
+### Tegridy Code 2022
