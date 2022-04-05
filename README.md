@@ -31,7 +31,7 @@
 
 ### Q) How long should I train for?
 ### A1) Train for no more than 1 epoch. This usually works well. Training longer usually degrades performance.
-### A2) You can try to cheat with the help of RPR and train only to full convergence. It is really dataset/task depnendent so it may not always work.
+### A2) You can try to cheat with the help of RPR and train only to full convergence (make sure to use random shuffling). But it is really dataset/task dependent so such trick may not always work for your particular purpose.
 
 ### Q) What is the idea behind Morpheus Maker 128x128?
 ### A) We basically want to try to squeze music into symmetrical AND reasonable space. In this case its [127, 127, 127, 127*10, 1]. Music generally loves symmetry. So do the transformer NNs. Its not the most perfect arrangement, nor it is the most universal, but it does show better results over assymetrical encoding schemas.
