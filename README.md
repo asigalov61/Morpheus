@@ -30,7 +30,7 @@
 ### FAQ
 
 ### Q) What is the idea behind Morpheus Maker 128x128?
-### A) We basically want to try to squeze music into symmetrical space. In this case its [127, 127, 127, 127*10, 1]. Music generally loves symmetry. So do the transformer NNs. Its not the most perfect arrangement, nor it is the most universal, but it does show better results over assymetrical encoding schemas.
+### A) We basically want to try to squeze music into symmetrical AND reasonable space. In this case its [127, 127, 127, 127*10, 1]. Music generally loves symmetry. So do the transformer NNs. Its not the most perfect arrangement, nor it is the most universal, but it does show better results over assymetrical encoding schemas.
 
 ***
 
