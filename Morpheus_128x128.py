@@ -80,7 +80,7 @@ os.chdir('/notebooks/')
 
 from collections import OrderedDict
 
-full_path_to_model_checkpoint = "/notebooks/gpt2_rpr_checkpoint_1_epoch_32000_steps_1.5811_loss.pth" #@param {type:"string"}
+full_path_to_model_checkpoint = "/notebooks/Morpheus-Trained-Model-128-128.pth" #@param {type:"string"}
 
 print('Loading the model...')
 config = GPTConfig(19200, 
@@ -267,7 +267,7 @@ temperature = 1 #@param {type:"slider", min:0.1, max:1.3, step:0.1}
 
 show_stats = True #@param {type:"boolean"}
 
-number_of_instruments = 4
+number_of_instruments = 10
 
 #===================================================================
 
@@ -280,6 +280,7 @@ print('Morpheus Music Model Continuation Generator')
 output_signature = 'Morpheus'
 song_name = 'RGA Composition'
 out = []
+sequence = []
 if show_stats:
   print('=' * 70)
   print('Priming type:', priming_type)
@@ -333,6 +334,7 @@ if len(out) != 0:
     dur = 1
     vel = 0
     pitch = 0
+    once = 0
     duration = 0
     for s in song:
         if s >= 0 and s < 128 * 128:
@@ -500,7 +502,12 @@ for i in tqdm(range(number_of_prime_notes, min(number_of_input_melody_notes, len
     outy = []
 
     for o in out[len(sng[-1006:])+2:]:
-        if o >=(128*128):
+        if o < 128*128:
+            time = o % 128
+        
+        
+        
+        if time == 0:
             outy.append(o)
         else:
             break
