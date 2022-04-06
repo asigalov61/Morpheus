@@ -110,7 +110,7 @@ melody_chords_f = []
 print('Loading MIDI files...')
 print('This may take a while on a large dataset in particular.')
 
-dataset_addr = "./clean_midi/"
+dataset_addr = "./Dataset/"
 # os.chdir(dataset_addr)
 filez = list()
 for (dirpath, dirnames, filenames) in os.walk(dataset_addr):
@@ -270,7 +270,7 @@ INTS_f1 = TMIDIX.Tegridy_Any_Pickle_File_Reader('/notebooks/Morpheus_INTS_128x12
 
 
 #@title Load processed INTs datasets
-number_of_batches = 8 # Change this to your specs
+number_of_batches = 16 # Change this to your specs
 n_workers = 6 # Change this to your specs
 dataset_ratio = 1 # Change this if you want to limit input data
 val_dataset_ratio = 0.03 # Change this if you want to limit input data
@@ -289,8 +289,8 @@ for i in tqdm(INTS_f1):
 
     if min(i) >= 0:
         
-        if i[0] != 0:
-            train_data1.extend([i[0] + int(i[1] * 128)])
+        #if i[0] != 0: # This is chordification line. Enable to chord.
+        train_data1.extend([i[0] + int(i[1] * 128)])
 
         if i[4] > avg_vel: 
             train_data1.extend([(128*128) + 128 + (256 * i[3])+i[2]])
