@@ -1,6 +1,6 @@
 # Morpheus
 
-## Most advanced and fully open-sourced Symbolic MIDI Music AI implementation on GitHub
+## Most advanced fully open-sourced Symbolic MIDI Music AI implementation on GitHub
 
 
 [![Open In Colab][colab-badge3]][colab-notebook3]
