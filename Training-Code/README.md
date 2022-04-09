@@ -59,6 +59,12 @@ print('Done!')
 
 ***
 
+#### Here is a rather humble diagram of the Morpheus encoding:
+
+![Morpheus-Encoding-Schema](https://user-images.githubusercontent.com/56325539/162582000-ddc78c1d-ac30-4fc7-a813-1f0bbc736f57.png)
+
+***
+
 ### Project Los Angeles
 
 ### Tegridy Code 2022
