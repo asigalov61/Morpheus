@@ -2,10 +2,16 @@
 
 ## Most advanced fully open-sourced Symbolic MIDI Music AI implementation on GitHub
 
+### Original Version
+[![Open In Colab][colab-badge2]][colab-notebook3]
 
+[colab-notebook2]: <https://colab.research.google.com/github/asigalov61/Morpheus/blob/main/%5BGC%5D_Morpheus.ipynb>
+[colab-badge2]: <https://colab.research.google.com/assets/colab-badge.svg>
+
+### 128x128 Version
 [![Open In Colab][colab-badge3]][colab-notebook3]
 
-[colab-notebook3]: <https://colab.research.google.com/github/asigalov61/Morpheus/blob/main/%5BGC%5D_Morpheus.ipynb>
+[colab-notebook3]: <https://colab.research.google.com/github/asigalov61/Morpheus/blob/main/Morpheus_128x128.ipynb>
 [colab-badge3]: <https://colab.research.google.com/assets/colab-badge.svg>
 
 ***
