@@ -2,6 +2,12 @@
 
 ## Most advanced fully open-sourced Symbolic MIDI Music AI implementation on GitHub
 
+***
+
+![the-art-warriors-morpheo](https://user-images.githubusercontent.com/56325539/147360073-59cfb940-9ed2-4903-8618-d3db58df3e24.jpg)
+
+***
+
 ### Original Version
 [![Open In Colab][colab-badge2]][colab-notebook3]
 
@@ -26,10 +32,6 @@
 ### 6) Pure PyTorch implementation (you only need PyTorch for training and inference)
 ### 7) Super-optimized and streamlined code (easy to understand and to modify)
 ### 8) BONUS: CLaMP capabilities (CLIP for Music)
-
-***
-
-![the-art-warriors-morpheo](https://user-images.githubusercontent.com/56325539/147360073-59cfb940-9ed2-4903-8618-d3db58df3e24.jpg)
 
 ***
 
