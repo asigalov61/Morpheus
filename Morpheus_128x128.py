@@ -80,14 +80,14 @@ os.chdir('/notebooks/')
 
 from collections import OrderedDict
 
-full_path_to_model_checkpoint = "/notebooks/Morpheus-Trained-Model-128-128.pth" #@param {type:"string"}
+full_path_to_model_checkpoint = "/notebooks/Morpheus-Trained-Model-2048.pth" #@param {type:"string"}
 
 print('Loading the model...')
 config = GPTConfig(19200, 
                    max_seq,
                    dim_feedforward=1024,
-                   n_layer=8, 
-                   n_head=8, 
+                   n_layer=16, 
+                   n_head=16, 
                    n_embd=1024,
                    enable_rpr=True,
                    er_len=max_seq)
@@ -212,23 +212,23 @@ inputs = []
 for i in SONG:
     if max(i) < 128 and min(i) >= 0:
 
-        if i[0] != 0:
-            inputs.extend([i[0] + int(i[1] * 128)])
-            
-            melody.extend([i[0] + int(i[1] * 128)])
-            
-            if i[4] > 84:
-                melody.extend([(128*128) + 128 + (256 * i[3])+i[2]])
-            else:
-                melody.extend([(128*128) + (256 * i[3])+i[2]])
+        #if i[0] != 0:
+        inputs.extend([i[0] + int(i[1] * 128)])
 
-            if i[3] < 10:
-              times.extend([i[0] + int(i[1] * 128)])
-              
-              if i[4] > 84:
-                  pitches.extend([(128*128) + 128 + (256 * i[3])+i[2]])
-              else:
-                  pitches.extend([(128*128) + (256 * i[3])+i[2]])
+        melody.extend([i[0] + int(i[1] * 128)])
+
+        if i[4] > 84:
+            melody.extend([(128*128) + 128 + (256 * i[3])+i[2]])
+        else:
+            melody.extend([(128*128) + (256 * i[3])+i[2]])
+
+        if i[3] < 10:
+          times.extend([i[0] + int(i[1] * 128)])
+
+          if i[4] > 84:
+              pitches.extend([(128*128) + 128 + (256 * i[3])+i[2]])
+          else:
+              pitches.extend([(128*128) + (256 * i[3])+i[2]])
 
         if i[4] > 84:
             inputs.extend([(128*128) + 128 + (256 * i[3])+i[2]])
@@ -263,11 +263,11 @@ number_of_tokens_to_generate = 1024 #@param {type:"slider", min:512, max:1024, s
 priming_type = "Custom MIDI" #@param ["Intro", "Outro", "Custom MIDI"]
 custom_MIDI_trim_type = "From Start" #@param ["From Start", "From End"]
 
-temperature = 1 #@param {type:"slider", min:0.1, max:1.3, step:0.1}
+temperature = 0.8 #@param {type:"slider", min:0.1, max:1.3, step:0.1}
 
 show_stats = True #@param {type:"boolean"}
 
-number_of_instruments = 10
+number_of_instruments = 1
 
 #===================================================================
 
@@ -469,10 +469,10 @@ print('=' * 70)
 
 
 #@title Generate an accompaniment for the custom MIDI melody
-number_of_input_melody_notes = 128 #@param {type:"slider", min:16, max:256, step:16}
+number_of_input_melody_notes = 256 #@param {type:"slider", min:16, max:256, step:16}
 number_of_instruments = 10
 number_of_prime_notes = 0
-
+temperature = 0.8
 print('=' * 70)
 
 
@@ -488,12 +488,12 @@ for i in range(number_of_prime_notes):
     
 for i in tqdm(range(number_of_prime_notes, min(number_of_input_melody_notes, len(pitches)))):
   
-    #if len(sng + [times[i], pitches[i]]) + 16 >= 1024:
-    #break
+    if len(sng) + 16 >= 1024:
+        break
 
     rand_seq = model.generate(torch.Tensor(sng[-1006:] + [times[i], pitches[i]]), 
                               target_seq_length=len(sng[-1006:]) + 2 + 16, 
-                              temperature=1,
+                              temperature=temperature,
                               stop_token=(128*128)+(256 * number_of_instruments),
                               verbose=False)
 
@@ -561,7 +561,7 @@ print('=' * 70)
 
 
 #@title Generate an accompaniment for the custom MIDI melody
-number_of_input_melody_notes = 256 #@param {type:"slider", min:16, max:256, step:16}
+number_of_input_melody_notes = 512 #@param {type:"slider", min:16, max:256, step:16}
 number_of_instruments = 1
 number_of_prime_notes = 32
 original_pitch_ratio = 2
