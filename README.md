@@ -9,7 +9,7 @@
 ***
 
 ### Original Version
-[![Open In Colab][colab-badge2]][colab-notebook3]
+[![Open In Colab][colab-badge2]][colab-notebook2]
 
 [colab-notebook2]: <https://colab.research.google.com/github/asigalov61/Morpheus/blob/main/%5BGC%5D_Morpheus.ipynb>
 [colab-badge2]: <https://colab.research.google.com/assets/colab-badge.svg>
