@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# # Morpheus (ver. 1.0)
+# # Morpheus 128x128 (ver. 1.0)
 # 
 # ***
 # 
@@ -19,7 +19,7 @@
 # 
 # #### Project Los Angeles
 # 
-# #### Tegridy Code 2021
+# #### Tegridy Code 2022
 # 
 # ***
 
@@ -84,13 +84,13 @@ full_path_to_model_checkpoint = "/notebooks/Morpheus-Trained-Model-2048.pth" #@p
 
 print('Loading the model...')
 config = GPTConfig(19200, 
-                   max_seq,
+                   2048,
                    dim_feedforward=1024,
                    n_layer=16, 
                    n_head=16, 
                    n_embd=1024,
                    enable_rpr=True,
-                   er_len=max_seq)
+                   er_len=2048)
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -100,8 +100,8 @@ state_dict = torch.load(full_path_to_model_checkpoint, map_location=device)
 
 new_state_dict = OrderedDict()
 for k, v in state_dict.items():
-   name = k[7:] #remove 'module'
-   new_state_dict[name] = v
+    name = k[7:] #remove 'module'
+    new_state_dict[name] = v
 
 model.load_state_dict(new_state_dict)
 
@@ -210,11 +210,10 @@ melody = []
 inputs = []
 
 for i in SONG:
-    if max(i) < 128 and min(i) >= 0:
+    
+    inputs.extend([i[0] + int(i[1] * 128)])
 
-        #if i[0] != 0:
-        inputs.extend([i[0] + int(i[1] * 128)])
-
+    if i[0] != 0:
         melody.extend([i[0] + int(i[1] * 128)])
 
         if i[4] > 84:
@@ -222,27 +221,27 @@ for i in SONG:
         else:
             melody.extend([(128*128) + (256 * i[3])+i[2]])
 
-        if i[3] < 10:
-          times.extend([i[0] + int(i[1] * 128)])
+    if i[3] < 10:
+      times.extend([i[0] + int(i[1] * 128)])
+
+      if i[4] > 84:
+          pitches.extend([(128*128) + 128 + (256 * i[3])+i[2]])
+      else:
+          pitches.extend([(128*128) + (256 * i[3])+i[2]])
+
+    if i[4] > 84:
+        inputs.extend([(128*128) + 128 + (256 * i[3])+i[2]])
+    else:
+        inputs.extend([(128*128) + (256 * i[3])+i[2]])
+
+    if i[3] < 10:
+          itimes.extend([i[0] + int(i[1] * 128)])
 
           if i[4] > 84:
-              pitches.extend([(128*128) + 128 + (256 * i[3])+i[2]])
+              ipitches.extend([(128*128) + 128 + (256 * i[3])+i[2]])
           else:
-              pitches.extend([(128*128) + (256 * i[3])+i[2]])
-
-        if i[4] > 84:
-            inputs.extend([(128*128) + 128 + (256 * i[3])+i[2]])
-        else:
-            inputs.extend([(128*128) + (256 * i[3])+i[2]])
-        
-        if i[3] < 10:
-              itimes.extend([i[0] + int(i[1] * 128)])
-              
-              if i[4] > 84:
-                  ipitches.extend([(128*128) + 128 + (256 * i[3])+i[2]])
-              else:
-                  ipitches.extend([(128*128) + (256 * i[3])+i[2]])
-        pe = i
+              ipitches.extend([(128*128) + (256 * i[3])+i[2]])
+    pe = i
 
 print('=' * 70)
 print('Done!')
@@ -312,9 +311,9 @@ if priming_type == 'Custom MIDI' and inputs != []:
     out = []
 
     if custom_MIDI_trim_type == 'From Start':
-      sequence = inputs[:512]
+        sequence = inputs[:512]
     else:
-      sequence = inputs[-512:]
+        sequence = inputs[-512:]
 
     rand_seq = model.generate(torch.Tensor(sequence), 
                               target_seq_length=number_of_tokens_to_generate, 
@@ -401,22 +400,21 @@ print('=' * 70)
 song = []
 sng = copy.deepcopy(melody[:number_of_input_melody_notes])
 
-for i in tqdm(range(number_of_input_melody_notes)):
+for i in tqdm(range(1024-2-number_of_input_melody_notes)):
   
-  if len(sng)+2  >= 1024:
-    break
-  
+    if len(sng)+2  >= 1024:
+        break
 
-  rand_seq = model.generate(torch.Tensor(sng), 
+    rand_seq = model.generate(torch.Tensor(sng), 
                               target_seq_length=len(sng) + 2,
                               temperature=temperature,
                               stop_token=(128*128)+(256 * number_of_instruments),
                               verbose=False)
 
-  out = rand_seq[0].cpu().numpy().tolist()
+    out = rand_seq[0].cpu().numpy().tolist()
 
-  #if out[-2] < 128 * 128 and out[-1] > 128 * 128:
-  sng.extend(out[-2:])
+    if out[-2] % 128 != 0:  
+        sng.extend(out[-2:])
 
 print('=' * 70)
 print('Converting to MIDI...')
@@ -473,6 +471,7 @@ number_of_input_melody_notes = 256 #@param {type:"slider", min:16, max:256, step
 number_of_instruments = 10
 number_of_prime_notes = 0
 temperature = 0.8
+
 print('=' * 70)
 
 
@@ -565,6 +564,7 @@ number_of_input_melody_notes = 512 #@param {type:"slider", min:16, max:256, step
 number_of_instruments = 1
 number_of_prime_notes = 32
 original_pitch_ratio = 2
+temperature = 0.8
 
 print('=' * 70)
 
@@ -583,28 +583,26 @@ for i in range(number_of_prime_notes):
 
 for i in tqdm(range(number_of_prime_notes, min(number_of_input_melody_notes, len(ipitches))-1)):
   
-  if len(sng) + 2 >= 1024:
-    break
-  
-  for j in range(100):
-
-      rand_seq = model.generate(torch.Tensor(sng + [abs(itimes[i]) ]), 
-                                  target_seq_length=len(sng) + 2, 
-                                  stop_token=(128*128)+(256 * number_of_instruments),
-                                  verbose=False)
-
-      out = rand_seq[0].cpu().numpy().tolist()
-        
-      if out[-1] > 128 * 128:
+    if len(sng) + 2 >= 1024:
         break
+
+
+    rand_seq = model.generate(torch.Tensor(sng + [abs(itimes[i]) ]), 
+                              target_seq_length=len(sng) + 2, 
+                              stop_token=(128*128)+(256 * number_of_instruments),
+                              temperature=temperature
+                              verbose=False)
+
+    out = rand_seq[0].cpu().numpy().tolist()
+
     
-  sng.extend([abs(itimes[i])])
+    sng.extend([abs(itimes[i])])
   
-  if i % original_pitch_ratio == 0:
-    sng.extend([pitches[i]])
+    if i % original_pitch_ratio == 0:
+        sng.extend([pitches[i]])
   
-  else:
-    sng.extend([out[-1]])
+    else:
+        sng.extend([out[-1]])
 
 print('=' * 70)
 print('Converting to MIDI...')
