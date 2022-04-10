@@ -41,8 +41,11 @@
 ### A1) Train for no more than 1 epoch. This usually works well. Training longer usually degrades performance.
 ### A2) You can try to cheat with the help of RPR and train only to full convergence (make sure to use random shuffling). But it is really dataset/task dependent so such trick may not always work for your particular purpose.
 
-### Q) What is the idea behind Morpheus Maker 128x128?
+### Q) What is the idea behind Morpheus 128x128?
 ### A) We basically want to try to squeze music into symmetrical AND reasonable space. In this case its [127, 127, 127, 127*10, 1]. Music generally loves symmetry. So do the transformer NNs. Its not the most perfect arrangement, nor it is the most universal, but it does show better results over assymetrical encoding schemas.
+
+### Q) Why Morpheus 128x128 does not use chordification?
+### A) Chordification greately helps to save on train data size indeed. Unfortunatelly, this comes at a price: quality loss, especially on delicate datasets. Therefore, to allow for maximum music output quality Morpheus 128x128 excludes chordification.
 
 ***
 
