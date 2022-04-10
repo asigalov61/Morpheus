@@ -53,7 +53,7 @@ print('Done!')
 
 #### 32x128 timings version seem to produce better results over original 256x10 version due to the fact that duration timings seem to be more important for music/model than start-times. Also, 32x128 > 256x10 but not significantly so there is an acceptable trade-off IMHO in terms of timings distribution vs. dictionary size. 
 
-#### 128x128 timings version seem to produec even better output with delicate datasets/MIDIs but at the expense of the dictionary size.
+#### 128x128 timings version seem to produce even better output with delicate datasets/MIDIs but at the expense of the dictionary size.
 
 #### So rule of the thumb here is that you need to select/LISTEN TO each version with your dataset/MIDIs to determine the most approprite timings encoding schema. In other words, timings schema are dataset/MIDIs dependent and there is no universal approach really if you want to be efficient in terms of encoding.
 
@@ -61,7 +61,7 @@ print('Done!')
 
 #### Here is a rather humble diagram of the Morpheus encoding:
 
-![Morpheus-Encoding-Schema](https://user-images.githubusercontent.com/56325539/162582000-ddc78c1d-ac30-4fc7-a813-1f0bbc736f57.png)
+![Morpheus-Encoding-Schema](https://user-images.githubusercontent.com/56325539/162607992-bd401adc-64d7-4c03-941e-e03312e5d282.png)
 
 ***
 
