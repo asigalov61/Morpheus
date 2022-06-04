@@ -184,30 +184,36 @@ for f in tqdm(filez[:int(len(filez) * dataset_ratio)]):
                             once = True
                             
                     if not once and event[3] != 9: # Except the drums
-                        event[3] = 11 # All other instruments/patches channel
+                        event[3] = 0 # All other instruments/patches channel
+                        event[5] = max(80, event[5])
                         
-                    if event[3] < 11: # We won't write all other instruments for now...
+                    if event[3] < 11: # We won't write chans 11-16 for now...
                         events_matrix1.append(event)
                         stats[event[3]] += 1
 
-        events_matrix1.sort()
+        # recalculating timings
+        
+        for e in events_matrix1:
+            e[1] = int(e[1] / 10)
+            e[2] = int(e[2] / 10)
+        
+        # final processing...
 
         #=======================
 
         if len(events_matrix1) > 0:
-            events_matrix1.sort(key=lambda x: x[4], reverse=True)
-            events_matrix1.sort(key=lambda x: (x[1], x[3]))
+            events_matrix1.sort(key=lambda x: (x[1], x[4]))
 
             cho = []
             pe = events_matrix1[0]
             melody_chords = []
             for e in events_matrix1:
 
-                time = min(127, int(abs(e[1]-pe[1]) / 10))
-                dur = min(127, int(e[2] / 10))
+                time = min(127, e[1]-pe[1])
+                dur = max(1, min(127, e[2]))
                 cha = e[3]
-                ptc = e[4]
-                vel = e[5]
+                ptc = min(127, e[4])
+                vel = min(127, e[5])
 
                 melody_chords.append([time, dur, ptc, cha, vel])
 
@@ -223,6 +229,28 @@ for f in tqdm(filez[:int(len(filez) * dataset_ratio)]):
     except:
         print('Bad MIDI:', f)
         continue
+        
+print('=' * 70)
+        
+print('Done!')   
+print('=' * 70)
+
+print('Resulting Stats:')
+print('=' * 70)
+
+print('Piano:', stats[0])
+print('Guitar:', stats[1])
+print('Bass:', stats[2])
+print('Violin:', stats[3])
+print('Cello:', stats[4])
+print('Harp:', stats[5])
+print('Trumpet:', stats[6])
+print('Clarinet:', stats[7])
+print('Flute:', stats[8])
+print('Drums:', stats[9])
+print('Choir:', stats[10])
+
+print('=' * 70)
 
 
 # In[ ]:
