@@ -1,6 +1,6 @@
 # Morpheus
 
-## Most advanced fully open-sourced Symbolic MIDI Music AI implementation on GitHub
+## DEPRECIATED in favor of [Yoda](https://github.com/asigalov61/Yoda)
 
 ***
 
